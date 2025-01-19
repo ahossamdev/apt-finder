@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  # Frontend service
+  client:
+    build:
+      context: ./client-side
+      dockerfile: Dockerfile
+    container_name: apt-finder-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3008
+
+  # Backend service
+  server:
+    build:
+      context: ./server-side
+      dockerfile: Dockerfile
+    container_name: apt-finder-server
+    ports:
+      - "3008:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
